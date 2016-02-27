@@ -1,0 +1,30 @@
+---
+- hosts: php54
+  vars: 
+    - destination: /home/vagrant
+  tasks:
+    - name: App | Install git
+      package: name=git state=latest
+
+    - name: App | Clone bash-it and fzf
+      git: repo=http://github.com/{{ item.org }}/{{ item.repo }}.git
+           dest={{ item.dest }}
+           accept_hostkey=yes
+           force=yes
+           recursive=no
+      with_items:
+        - 
+          org: Bash-it
+          repo: bash-it
+          dest: "{{ destination }}/.bash_it"
+        - 
+          org: junegunn
+          repo: fzf
+          dest: "{{ destination }}/.fzf"
+
+    - name: App | Install fzf
+      shell: yes | "{{ destination }}/.fzf/install"
+
+    - name: App | Install bash-it
+      shell: yes | "{{ destination }}/.bash_it/install.sh"
+
