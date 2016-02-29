@@ -1,12 +1,20 @@
 ---
 - hosts: php54
+  sudo_user: vagrant
   vars: 
     - destination: /home/vagrant
   tasks:
-    - name: App | Install git
-      package: name=git state=latest
+    - name: App | Install git and the_silver_search
+      package: name={{ item.name }} state=latest
+      become: root
+      become_method: sudo
+      with_items:
+        - 
+          name: git
+        - 
+          name: the_silver_searcher
 
-    - name: App | Clone bash-it and fzf
+    - name: App | Clone fzf
       git: repo=http://github.com/{{ item.org }}/{{ item.repo }}.git
            dest={{ item.dest }}
            accept_hostkey=yes
@@ -14,17 +22,9 @@
            recursive=no
       with_items:
         - 
-          org: Bash-it
-          repo: bash-it
-          dest: "{{ destination }}/.bash_it"
-        - 
           org: junegunn
           repo: fzf
           dest: "{{ destination }}/.fzf"
 
     - name: App | Install fzf
       shell: yes | "{{ destination }}/.fzf/install"
-
-    - name: App | Install bash-it
-      shell: yes | "{{ destination }}/.bash_it/install.sh"
-
